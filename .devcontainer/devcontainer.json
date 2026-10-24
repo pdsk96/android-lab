@@ -1,0 +1,11 @@
+{
+  "name": "android-lab",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {},
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  }
+}
