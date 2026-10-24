@@ -4,6 +4,12 @@ export DEBIAN_FRONTEND=noninteractive
 sudo apt-get update -qq
 sudo apt-get install -y -qq openjdk-17-jdk openjdk-21-jdk unzip wget curl git python3-pip mono-devel mono-utils 2>&1 | tail -2
 
+# Gradle 8.9
+cd /tmp
+wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip -O gradle8.zip
+sudo unzip -q -o gradle8.zip -d /opt
+sudo ln -sf /opt/gradle-8.9/bin/gradle /usr/local/bin/gradle
+
 # Android SDK
 export ANDROID_HOME=$HOME/android-sdk
 mkdir -p $ANDROID_HOME/cmdline-tools
@@ -14,7 +20,7 @@ unzip -q -o cmdline.zip -d $ANDROID_HOME/cmdline-tools
 mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
 export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
 yes | sdkmanager --licenses >/dev/null 2>&1 || true
-sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" >/dev/null 2>&1
+sdkmanager "platform-tools" "platforms;android-34" "build-tools;34.0.0" "emulator" "system-images;android-34;google_apis;x86_64" >/dev/null 2>&1
 
 # apktool
 wget -q https://github.com/iBotPeaches/Apktool/releases/download/v2.9.3/apktool_2.9.3.jar -O /tmp/apktool.jar
@@ -29,16 +35,21 @@ sudo mkdir -p /opt/jadx
 sudo unzip -q -o /tmp/jadx.zip -d /opt/jadx
 sudo ln -sf /opt/jadx/bin/jadx /usr/local/bin/jadx
 
-# ghidra
+# Ghidra 12.1.4
 wget -q https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip -O /tmp/ghidra.zip
 rm -rf /opt/ghidra
 sudo mkdir -p /opt/ghidra
 sudo unzip -q /tmp/ghidra.zip -d /opt/ghidra
 
-# python modules
+# Python modules
 pip install lz4 pyelftools xxhash setuptools 2>&1 | tail -1
 cd /tmp && rm -rf pyxamstore && git clone https://github.com/jakev/pyxamstore.git 2>&1 | tail -1
 cd /tmp/pyxamstore && python3 setup.py install 2>&1 | tail -1
+
+# .NET + ilspycmd
+# (dotnet already in codespace base image)
+export PATH=$HOME/.dotnet/tools:$PATH
+dotnet tool install --global ilspycmd 2>&1 | tail -1
 
 # env
 cat > ~/.android_env <<ENV
